@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>game</title>
+  </head>
+  <body>
+    <div id="game"></div>
+    <div id="incorrectGuesses"></div>
+    <div id="wins"></div>
+    <script>
+      var arrOfWords = [
+        "dog",
+        "cat",
+        "mouse",
+        "monkey",
+        "iguana",
+        "elephant",
+        "moose"
+      ];
+
+      var randomString;
+      var currentlyGuessedCharacters = [];
+      var winsCounter = 0;
+      var guessArray = [];
+
+      function reset() {
+        currentlyGuessedCharacters = [];
+        guessArray = [];
+        randomString =
+          arrOfWords[Math.floor(Math.random() * arrOfWords.length)];
+        for (var index = 0; index < randomString.length; index++) {
+          guessArray.push("_");
+        }
+        printWord();
+        printIncorrectWords();
+      }
+      reset();
+      async function printWord() {
+        var temp = "";
+        for (var i = 0; i < guessArray.length; i++) {
+          temp += " " + guessArray[i] + " ";
+        }
+        var gameDiv = document.getElementById("game");
+        gameDiv.textContent = temp;
+      }
+      function printIncorrectWords() {
+        var temp = "";
+        for (var i = 0; i < currentlyGuessedCharacters.length; i++) {
+          temp += " " + currentlyGuessedCharacters[i] + " ";
+        }
+        var guessDiv = document.getElementById("incorrectGuesses");
+        guessDiv.textContent = temp;
+      }
+
+      function findCharacters(enteredKey) {
+        var foundPositions = [];
+        for (var i = 0; i < randomString.length; i++) {
+          if (randomString[i] === enteredKey) {
+            foundPositions.push(i);
+          }
+        }
+        return foundPositions; //return is the value of foundPositions after the function block has executed.  Either an empty array if no characters were found or an array of found positions
+      }
+
+      document.onkeyup = function(event) {
+        // u
+        var enteredKey = event.key.toLowerCase();
+        var arrPositions = findCharacters(enteredKey); // arrposition = [2]
+        if (arrPositions.length === 0) {
+          var exists = currentlyGuessedCharacters.indexOf(enteredKey);
+          if (exists === -1) {
+            currentlyGuessedCharacters.push(enteredKey);
+            printIncorrectWords();
+          }
+        } else {
+          for (var i = 0; i < arrPositions.length; i++) {
+            guessArray[arrPositions[i]] = enteredKey;
+          }
+          printWord();
+          //only enters if correct letter pressed
+          var guessedCorrectly = guessArray.indexOf("_");
+          if (guessedCorrectly === -1) {
+            console.log(guessArray);
+            var winDiv = document.getElementById("wins");
+            winsCounter++;
+            winDiv.textContent = winsCounter;
+            printWord();
+            setTimeout(function() {
+                if(confirm('Do you want to play again?')){
+                    reset();
+                }
+            }, 500);
+          }
+        }
+      };
+    </script>
+  </body>
+</html>
